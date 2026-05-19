@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestor de tareas</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet"></head>
+<body>
+    <header>
+        <button id="menu-toggle" tabindex="0" role="button" aria-label="Abrir menú lateral">☰</button>
+        <h1>Gestor de tareas</h1>
+        <div class="user-info">
+            <span id="user-name"></span>
+            <button id="logout-btn" aria-label="Cerrar sesión">Salir</button>
+        </div>
+    </header>
+
+    <aside id="sidebar">
+        <nav>
+        <div id="task-form-menu">
+            <h2>Formulario</h2>
+            <form id="taskForm-menu" class="task-form">
+                <fieldset>
+                    <legend>Nueva Tarea</legend>
+
+                    <label for= "title">Título: </label>
+                    <input type="text" class="title" name ="title" required>
+
+                    <label for="description">Descripción: </label>
+                    <textarea name="description" class="description" maxlength="140"></textarea>
+                    <label for="priority">Prioridad: </label>
+                    <select class="priority" name="priority">
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+
+                    <label for="category-input">Categorías</label>
+                    <input type="text" 
+                    class="category-input" name="category-input"
+                    placeholder="Escribe una categoría y pulsa Enter">
+
+                    <select multiple size="2" name="categories" class="categories"></select>
+
+                    <label for="date">Fecha límite: </label>
+                    <input type="date" name="date" class="date">
+
+                    <button type="submit">Agregar tarea</button>
+                </fieldset>
+            </form>
+        </div>
+
+        <hr>
+
+        <div id="task-filters-menu">
+            <h2>Filtros</h2>
+            <button type="button" data-filter="TODAS">Todas</button>
+            <button type="button" data-filter="COMPLETAS">Completas</button>
+            <button type="button" data-filter="INCOMPLETAS">Incompletas</button>
+        </div>
+
+        </nav>
+    </aside>
+
+    <main>
+        <section id="task-form">
+            <h2>Formulario</h2>
+            <form id="taskForm2" class="task-form">
+                <fieldset>
+                    <legend>Nueva Tarea</legend>
+
+                    <label for= "title">Título: </label>
+                    <input type="text" class="title" name ="title" required>
+
+                    <label for="description">Descripción: </label>
+                    <textarea name="description" class="description" maxlength="140"></textarea>
+                    <label for="priority">Prioridad: </label>
+                    <select class="priority" name="priority">
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+
+                    <label for="category-input">Categorías</label>
+                    <input type="text" 
+                    id="category-input" class="category-input" name="category-input"
+                    placeholder="Escribe una categoría y pulsa Enter">
+
+                    <select multiple size="2" name="categories" class="categories"></select>
+
+                    <label for="date">Fecha límite: </label>
+                    <input type="date" name="date" class="date">
+
+                    <button type="submit" aria-label="Botón para agregar una nueva tarea">Agregar tarea</button>
+                </fieldset>
+            </form>
+        </section>
+
+        <section id="task-filters">
+            <h2>Filtros</h2>
+            <button type="button" data-filter="TODAS">Todas</button>
+            <button type="button" data-filter="COMPLETAS">Completas</button>
+            <button type="button" data-filter="INCOMPLETAS">Incompletas</button>
+        </section>
+
+        <section id="task-list">
+            <div>
+                <form id="searchForm">
+                    <label for= "titleSearch">Buscar por título: </label>
+                    <input type="text" class="titleSearch" name ="titleSearch" placeholder="Buscar...">
+                    <button type="submit" aria-label="Botón para buscar tareas por título">🔎</button>
+                </form>
+            </div>
+            <h2>Lista de tareas</h2>
+            <div id="taskContainer">
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+        <p id="counter">Total de tareas: 0</p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+            <span class="progress-text" id="progress-text">0% completado</span> 
+        </div>
+        </div>
+    </footer>
+    <script src="js/session.js"></script>
+    <script>
+        (function() {
+            if (!getToken() || isSessionExpired()) {
+                clearSession();
+                window.location.href = 'auth.html';
+            }
+        })();
+    </script>
+    <script src="js/data.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

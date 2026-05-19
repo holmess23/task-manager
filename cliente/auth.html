@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Acceder - Gestor de Tareas</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body class="auth-page">
+        <main class="auth-container">
+            <h1>Gestor de Tareas</h1>
+            <div class="auth-tabs">
+                <button class="tab-btn" data-tab="login">Iniciar sesión</button>
+                <button class="tab-btn active" data-tab="register">Registrarse</button>
+            </div>
+
+            <section id="login-tab" class="auth-tab">
+                <form id="loginForm" action="submit">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="login-email" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña</label>
+                        <input type="password" id="login-password" name="login-password" required autocomplete="current-password">
+                    </div>
+                    <div id="login-error" class="auth-error" role="alert" aria-live="polite"></div>
+                    <button type="submit" class="btn-primary">Iniciar Sesión</button>
+                </form>
+            </section>
+
+            <section id="register-tab" class="auth-tab active">
+                <form id="registerForm" action="submit">
+                    <div class="form-group">
+                        <label for="register-name">Nombre</label>
+                        <input type="text" id="register-name" name="register-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" name="register-email" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Contraseña</label>
+                        <input type="password" id="register-password" name="register-password" required minlength="8" autocomplete="current-password">
+                        <span class="field-hint">Mínimo 8 caracteres</span>
+                    </div>
+                    <div id="register-error" class="auth-error" role="alert" aria-live="polite"></div>
+                    <button type="submit" class="btn-primary">Crear cuenta</button>
+                </form>
+            </section>
+        </main>
+        <script src="js/auth.js"></script>
+        <script src="js/session.js"></script>
+    </body>
+</html>
