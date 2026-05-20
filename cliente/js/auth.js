@@ -1,4 +1,4 @@
-const AUTH_URL = 'http://localhost:8080/api/auth';
+const AUTH_URL = '/api/auth';
 
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
