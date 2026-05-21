@@ -1,0 +1,104 @@
+name: CI - Verificar y testear
+
+on: 
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+
+  test-backend:
+    name: Tests del backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compilar con Maven
+        working-directory: ./manager
+        run: mvn compile -B
+
+      - name: Ejecutar los tests
+        working-directory: ./manager
+        run: mvn test -B
+        env:
+          DATABASE_URL: jdbc:h2:mem:testdb
+          DATABASE_USERNAME: sa
+          DATABASE_PASSWORD:
+          JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+          JWT_EXPIRATION: 86400000
+
+      - name: Empaquetar JAR
+        working-directory: ./manager
+        run: mvn package -DskipTests -B
+
+      - name: Guardar JAR como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: manager/target/*.jar
+          retention-days: 7
+          
+  verify-frontend:
+    name: Verificar el frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Verificar la estructura del frontend
+        run: |
+          echo "Verificando archivos del frontend..."
+          test -f cliente/main.html && echo "✓ main.html existe"
+          test -f cliente/auth.html && echo "✓ auth.html existe"
+          test -f cliente/style.css && echo "✓ style.css existe"
+          test -f cliente/js/app.js && echo "✓ app.js existe"
+          test -f cliente/js/data.js && echo "✓ data.js existe"
+          test -f cliente/js/ui.js && echo "✓ ui.js existe"
+          test -f cliente/js/auth.js && echo "✓ auth.js existe"
+          test -f cliente/js/session.js && echo "✓ session.js existe"
+          test -f cliente/js/validation.js && echo "✓ validation.js existe"
+          test -f cliente/nginx.conf && echo "✓ nginx.conf existe"
+          test -f cliente/Dockerfile && echo "✓ Dockerfile existe"
+          echo "Verificación completada"
+
+  build-docker:
+    name: Construir imágenes docker
+    runs-on: ubuntu-latest
+    needs: [test-backend, verify-frontend]
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+    
+      - name: Construir imagen del backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./manager
+          push: false
+          tags: task-manager-backend:test
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
+
+      - name: Construir imagen del frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./cliente
+          push: false
+          tags: task-manager-frontend:test
+          
+
+          
