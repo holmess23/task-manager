@@ -45,13 +45,13 @@ public class TaskServiceImplTest {
     @BeforeEach
     void setUp(){
 
-        task = new Task(
-            "Estudiar Spring Boot",
-            "Ver los tests",
-            LocalDate.of(2026, 12, 31),
-            Priority.ALTA,
-            Set.of(new Category("estudio", "#fff"))
-        );
+        task = Task.builder()
+        .title("Estudiar Spring Boot")
+        .description("Ver los tests")
+        .date(LocalDate.of(2026, 12, 31))
+        .priority(Priority.ALTA)
+        .categories(Set.of(new Category("estudio", "#fff")))
+        .build();
 
         task.forceId(1L);
 

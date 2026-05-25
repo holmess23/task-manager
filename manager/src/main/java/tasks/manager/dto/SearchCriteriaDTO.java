@@ -2,13 +2,18 @@ package tasks.manager.dto;
 
 import java.time.LocalDate;
 
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import tasks.manager.model.task.Priority;
+import tasks.manager.model.user.User;
 
 @Data
 @Schema(description = "Criterios de búsqueda y filtrado de tareas")
 public class SearchCriteriaDTO {
+
+    @Schema(description = "Filtrar por usuario")
+    private User user;
     
     @Schema(description = "Filtrar por estado", example = "true")
     private Boolean completed;

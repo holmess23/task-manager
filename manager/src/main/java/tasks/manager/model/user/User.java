@@ -1,8 +1,10 @@
 package tasks.manager.model.user;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,13 +17,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails{
     
     @Id
@@ -38,13 +44,16 @@ public class User implements UserDetails{
     private String name;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Role role = Role.USER;
 
-    public User(String email, String password, String name){
-        this.email = email;
-        this.password = password;
-        this.name = name;
-    }
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean enabled = true;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -74,6 +83,6 @@ public class User implements UserDetails{
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

@@ -17,6 +17,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tasks.manager.model.category.Category;
@@ -25,7 +27,9 @@ import tasks.manager.model.user.User;
 @Entity
 @Table(name = "tasks")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
     @Id
@@ -52,17 +56,8 @@ public class Task {
         joinColumns = @JoinColumn(name ="task.id"),
         inverseJoinColumns = @JoinColumn(name = "category_id")
     )
+    @Builder.Default
     private Set<Category> categories = new HashSet<>();
-    
-
-    public Task(String title, String description, LocalDate date, Priority priority, Set<Category> categories) {
-        this.title = title;
-        this.description = description;
-        this.date = date;
-        this.priority = priority;
-        this.categories = categories != null ? categories: new HashSet<>();
-        this.completed = false; 
-    }
 
     public void toggleCompleted() {
         this.completed = !this.completed;

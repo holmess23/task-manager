@@ -27,7 +27,11 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("El email ya está registrado.");
         }
 
-        User user = new User(dto.getEmail(), passwordEncoder.encode(dto.getPassword()), dto.getName());
+        User user = User.builder()
+                .email(dto.getEmail())
+                .name(dto.getName())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .build();
         userRepository.save(user);
         return new AuthResponseDTO(jwtService.generateToken(user), user.getName(), user.getEmail(), user.getRole().name());
     }
