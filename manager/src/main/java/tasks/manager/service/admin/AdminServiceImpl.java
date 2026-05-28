@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import tasks.manager.dto.user.AdminUserDTO;
 import tasks.manager.mapper.UserMapper;
 import tasks.manager.model.user.Role;
+import tasks.manager.model.user.User;
 import tasks.manager.repository.UserRepository;
 import tasks.manager.repository.tasks.TaskRepository;
 
@@ -29,7 +30,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public AdminUserDTO getUserById(Long id) {
+    public AdminUserDTO getUserById( Long id) {
         return userRepository.findById(id)
                 .map(user -> UserMapper.toDTO(user, taskRepository.countByUserId(user.getId())))
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
@@ -37,35 +38,32 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public AdminUserDTO toggleUserEnabled(Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setEnabled(!user.isEnabled());
-                    return UserMapper.toDTO(user, taskRepository.countByUserId(user.getId()));
-                })
+    public AdminUserDTO toggleUserEnabled( Long id) {
+        User userToToggle = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+        userToToggle.setEnabled(!userToToggle.isEnabled());
+        userToToggle = userRepository.save(userToToggle);
+        return UserMapper.toDTO(userToToggle, taskRepository.countByUserId(userToToggle.getId()));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public AdminUserDTO promoteToAdmin(Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setRole(Role.ADMIN);
-                    return UserMapper.toDTO(user, taskRepository.countByUserId(user.getId()));
-                })
+        User userToPromote = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+        userToPromote.setRole(Role.ADMIN);
+        userToPromote = userRepository.save(userToPromote);
+        return UserMapper.toDTO(userToPromote, taskRepository.countByUserId(userToPromote.getId()));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public AdminUserDTO demoteToUser(Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setRole(Role.USER);
-                    return UserMapper.toDTO(user, taskRepository.countByUserId(user.getId()));
-                })
+        User userToDemote = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+        userToDemote.setRole(Role.USER);
+        userToDemote = userRepository.save(userToDemote);
+        return UserMapper.toDTO(userToDemote, taskRepository.countByUserId(userToDemote.getId()));
     }
     
 }

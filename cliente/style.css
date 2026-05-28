@@ -388,6 +388,242 @@ article{
 .btn-primary:hover { opacity: 0.9; }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
+#pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 1rem 0;
+}
+
+.pagination-info {
+    font-size: 0.85rem;
+    color: var(--color-texto-secundario);
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.pagination-controls button {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    border: 1px solid var(--color-borde);
+    background: var(--color-superficie);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background: var(--color-primario);
+    color: white;
+    border-color: var(--color-primario);
+}
+
+.pagination-controls button.active {
+    background: var(--color-primario);
+    color: white;
+    border-color: var(--color-primario);
+    font-weight: 600;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Filtros avanzados ─────────────────────────────────── */
+
+.advanced-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: var(--color-superficie);
+    border-radius: 8px;
+    border: 1px solid var(--color-borde);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 140px;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.filter-group input[type="text"],
+.filter-group input[type="date"],
+.filter-group select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+}
+
+.filter-group-checkbox {
+    justify-content: flex-end;
+    padding-bottom: 0.2rem;
+}
+
+.filter-group-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    cursor: pointer;
+}
+
+.filter-group-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* ── Chips de filtros activos ──────────────────────────── */
+
+#active-filters {
+    margin-top: 0.75rem;
+    min-height: 1rem;
+}
+
+.active-filters-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--color-primario);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.chip-remove {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.chip-remove:hover {
+    color: white;
+}
+
+.clear-all {
+    padding: 0.3rem 0.8rem;
+    background: none;
+    border: 1px solid var(--color-borde);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--color-texto-secundario);
+    transition: all 0.2s;
+}
+
+.clear-all:hover {
+    background: var(--color-peligro, #dc2626);
+    border-color: var(--color-peligro, #dc2626);
+    color: white;
+}
+
+/* ── Controles de ordenación ───────────────────────────── */
+
+#sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+
+#sort-controls label {
+    font-size: 0.8rem;
+    color: var(--color-texto-secundario);
+}
+
+#sort-controls select {
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: var(--color-superficie);
+}
+
+#sort-controls button {
+    padding: 0.35rem 0.8rem;
+    background: var(--color-primario);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+#sort-controls button:hover {
+    opacity: 0.85;
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .advanced-filters {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        min-width: unset;
+        width: 100%;
+    }
+
+    #sort-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
 
 
 @media (max-width:768px){

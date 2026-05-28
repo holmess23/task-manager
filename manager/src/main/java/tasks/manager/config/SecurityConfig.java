@@ -48,6 +48,7 @@ public class SecurityConfig {
                                 "/webjars/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll() 
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

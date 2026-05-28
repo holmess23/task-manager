@@ -2,12 +2,12 @@ package tasks.manager.repository.tasks;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import tasks.manager.dto.SearchCriteriaDTO;
+import tasks.manager.dto.TaskSearchDTO;
 import tasks.manager.model.task.Task;
 
 public class SpecificationsBuilder {
 
-    public static Specification<Task> build(SearchCriteriaDTO criteria) {
+    public static Specification<Task> build(TaskSearchDTO criteria) {
         Specification<Task> spec = TaskSpecifications.belongsToUser(criteria.getUser());
 
         if(criteria.getCompleted() != null) {

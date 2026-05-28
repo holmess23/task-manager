@@ -3,8 +3,8 @@ const USER_NAME_KEY = 'userName';
 const USER_EMAIL_KEY = 'userEmail';
 const USER_ROLE_KEY = 'userRole';
 const LOGIN_TIME_KEY = 'loginTime';
-//const JWT_EXPIRATION_MS = 24 * 60 * 60 * 1000; 
-const JWT_EXPIRATION_MS = 2 * 60 * 1000; 
+const JWT_EXPIRATION_MS = 24 * 60 * 60 * 1000; 
+//const JWT_EXPIRATION_MS = 2 * 60 * 1000; 
 
 function getToken() {
     return localStorage.getItem(TOKEN_KEY);
@@ -19,7 +19,11 @@ function getUserEmail() {
 }
 
 function getUserRole() {
-    return localStorage.getItem(USER_ROLE_KEY);
+    return localStorage.getItem(USER_ROLE_KEY) || 'USER';
+}
+
+function isAdmin(){
+    return getUserRole() === 'ADMIN';
 }
 
 function isSessionExpired(){

@@ -3,11 +3,14 @@ package tasks.manager.service.tasks;
 import java.util.List;
 import java.util.Set;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import tasks.manager.dto.SearchCriteriaDTO;
+import tasks.manager.dto.PageResponseDTO;
+import tasks.manager.dto.TaskSearchDTO;
 import tasks.manager.dto.task.CreateTaskDTO;
 import tasks.manager.dto.task.TaskDTO;
 import tasks.manager.dto.task.UpdateTaskDTO;
@@ -32,12 +35,14 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
     @Override
-    public List<TaskDTO> searchTasks(SearchCriteriaDTO criteria) {
+    public PageResponseDTO<TaskDTO> searchTasks(TaskSearchDTO criteria) {
         User user = authUtil.getCurrentUser();
         criteria.setUser(user);
         Specification<Task> spec = SpecificationsBuilder.build(criteria);
 
-        return taskRepository.findAll(spec).stream().map(taskMapper::toDTO).toList();
+        Page<Task> taskPage = taskRepository.findAll(spec, criteria.toPageable());
+        Page<TaskDTO> dtoPage = taskPage.map(taskMapper::toDTO);
+        return PageResponseDTO.of(dtoPage);
     }
 
     @Override

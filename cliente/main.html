@@ -65,6 +65,8 @@
     </aside>
 
     <main>
+        <section id="admin-panel" style="display:none;" aria-label="Panel de administración para usuarios con rol ADMIN">
+        </section>
         <section id="task-form">
             <h2>Formulario</h2>
             <form id="taskForm2" class="task-form">
@@ -100,22 +102,77 @@
 
         <section id="task-filters">
             <h2>Filtros</h2>
-            <button type="button" data-filter="TODAS">Todas</button>
-            <button type="button" data-filter="COMPLETAS">Completas</button>
-            <button type="button" data-filter="INCOMPLETAS">Incompletas</button>
+            <div class="filter-container">
+                <button type="button" data-filter="TODAS" class="filter-btn active">Todas</button>
+                <button type="button" data-filter="COMPLETAS" class="filter-btn">Completadas</button>
+                <button type="button" data-filter="INCOMPLETAS" class="filter-btn">Pendientes</button>
+            </div>
+
+            <div class="advanced-filters">
+                <div class="filter-group">
+                    <label for="titleSearch">Buscar</label>
+                    <input type="text"
+                        class="titleSearch"
+                        id="titleSearch"
+                        placeholder="Título o descripción..."
+                        aria-label="Buscar tareas por texto">
+                </div>
+
+                <div class="filter-group">
+                    <label for="priority-filter">Prioridad</label>
+                    <select id="priority-filter" aria-label="Filtrar por prioridad">
+                        <option value="">Todas</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Media</option>
+                        <option value="BAJA">Baja</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="category-filter">Categoría</label>
+                    <select id="category-filter" aria-label="Filtrar por categoría">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="due-before">Antes de</label>
+                    <input type="date"
+                        id="due-before"
+                        aria-label="Fecha límite máxima">
+                </div>
+
+                <div class="filter-group">
+                    <label for="due-after">Después de</label>
+                    <input type="date"
+                        id="due-after"
+                        aria-label="Fecha límite mínima">
+                </div>
+
+                <div class="filter-group filter-group-checkbox">
+                    <label for="overdue-filter">
+                        <input type="checkbox"
+                            id="overdue-filter"
+                            aria-label="Mostrar solo tareas vencidas">
+                        Solo vencidas
+                    </label>
+                </div>
+            </div>
+
+            <div id="active-filters" aria-live="polite" aria-label="Filtros activos"></div>
+
+            <div id="sort-controls" aria-label="Ordenación"></div>
         </section>
 
         <section id="task-list">
-            <div>
-                <form id="searchForm">
-                    <label for= "titleSearch">Buscar por título: </label>
-                    <input type="text" class="titleSearch" name ="titleSearch" placeholder="Buscar...">
-                    <button type="submit" aria-label="Botón para buscar tareas por título">🔎</button>
-                </form>
+            <div id="sort-controls" aria-label="Controles de ordenación">
             </div>
             <h2>Lista de tareas</h2>
             <div id="taskContainer">
             </div>
+
+            <nav id="pagination" aria-label="Paginación de tareas">
+            </nav>
         </section>
 
     </main>

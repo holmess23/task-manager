@@ -1,5 +1,8 @@
 package tasks.manager.service.user;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +36,10 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .build();
         userRepository.save(user);
-        return new AuthResponseDTO(jwtService.generateToken(user), user.getName(), user.getEmail(), user.getRole().name());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", user.getName());
+        claims.put("role", user.getRole().name());
+        return new AuthResponseDTO(jwtService.generateToken(claims, user), user.getName(), user.getEmail(), user.getRole().name());
     }
 
     @Override
@@ -42,7 +48,11 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
-        return new AuthResponseDTO(jwtService.generateToken(user), user.getName(), user.getEmail(), user.getRole().name());
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", user.getName());
+        claims.put("role", user.getRole().name());
+        return new AuthResponseDTO(jwtService.generateToken(claims, user), user.getName(), user.getEmail(), user.getRole().name());
     }
     
 }

@@ -1,7 +1,6 @@
 package tasks.manager.controller;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import tasks.manager.dto.SearchCriteriaDTO;
+import tasks.manager.dto.PageResponseDTO;
+import tasks.manager.dto.TaskSearchDTO;
 import tasks.manager.dto.task.CreateTaskDTO;
 import tasks.manager.dto.task.TaskDTO;
 import tasks.manager.dto.task.UpdateTaskDTO;
@@ -65,7 +65,7 @@ public class TaskController {
         )
     })
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getTasks(
+    public ResponseEntity<PageResponseDTO<TaskDTO>> getTasks(
         @Parameter(description = "Filtrar por estado de completado", example = "true")
         @RequestParam(required = false) Boolean completed,
 
@@ -85,9 +85,14 @@ public class TaskController {
         @RequestParam(required = false) LocalDate dueAfter,
 
         @Parameter(description = "Filtrar tareas atrasadas (fecha de vencimiento pasada y no completada)", example = "true")
-        @RequestParam(required = false) Boolean overdue
+        @RequestParam(required = false) Boolean overdue,
+
+        @RequestParam(required = true) Integer page,
+        @RequestParam(required = true) Integer size,
+        @RequestParam(required = false) String sortBy,
+        @RequestParam(required = false) String sortDir
     ) {
-        SearchCriteriaDTO criteria = new SearchCriteriaDTO();
+        TaskSearchDTO criteria = new TaskSearchDTO();
         criteria.setCompleted(completed);
         criteria.setSearch(search);
         criteria.setPriority(priority);
@@ -95,8 +100,11 @@ public class TaskController {
         criteria.setDueBefore(dueBefore);
         criteria.setDueAfter(dueAfter);
         criteria.setOverdue(overdue);
+        criteria.setPage(page != null ? page : 0);
+        criteria.setSize(size != null ? size : 10);
+        criteria.setSortBy(sortBy);
+        criteria.setSortDir(sortDir);
 
-        
         return ResponseEntity.ok(service.searchTasks(criteria));
     }
 

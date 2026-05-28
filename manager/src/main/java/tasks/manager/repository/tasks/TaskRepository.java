@@ -11,5 +11,6 @@ import tasks.manager.model.user.User;
 public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
 
     boolean existsByIdAndUser(Long id, User user);
+    long countByUserId(Long id);
     
 }

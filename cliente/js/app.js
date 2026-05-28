@@ -2,7 +2,6 @@
 const forms = document.querySelectorAll('.task-form');
 const container = document.getElementById('taskContainer');
 const counter = document.getElementById('counter');
-const filters = document.getElementById('task-filters');
 const inputCategory = document.getElementById('category-input');
 const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.getElementById('sidebar');
@@ -13,11 +12,17 @@ const maxTasks = 10;
 
 document.addEventListener('DOMContentLoaded', async function() {
     categories = await loadCategories();
-    tasks = await loadTasks();
+    tasks = await applyFilters();
     taskCount = tasks.length;
     renderTasks();
+    renderPagination();
+    renderSortControls();
     updateProgressBar();
     renderCategories();
+
+    if(isAdmin()){
+        await renderAdminPanel();
+    }
 });
 
 if(userNameEl){
@@ -31,15 +36,6 @@ if(logoutBtn){
         }
     });
 }
-
-
-searchBar.addEventListener('submit', async function(event) {
-    event.preventDefault(); 
-    const input = document.querySelector('.titleSearch');
-    searchText = input ? input.value.trim() : '';
-    tasks = await loadTasks();
-    renderTasks();
-});
 
 
 forms.forEach(function(form) {
@@ -86,6 +82,7 @@ async function handleTaskSubmit(event, form) {
     try {
         await addTask(task);
         renderTasks();
+        renderPagination();
         updateProgressBar();
         form.reset();
     } catch (error) {
@@ -122,7 +119,9 @@ container.addEventListener('click', async function(event) {
         if (action === 'delete')   await deleteTask(id);
         if (action === 'complete') await toggleComplete(id);
 
+        tasks = await applyFilters();
         renderTasks();
+        renderPagination();
         updateProgressBar();
     } catch (error) {
         alert('Error: ' + error.message);
@@ -130,18 +129,83 @@ container.addEventListener('click', async function(event) {
 });
 
 
-filters.addEventListener('click', async function(event) {
-    const btn = event.target.closest('[data-filter]');
-    if (!btn) return;
+document.querySelectorAll('[data-filter]').forEach(btn =>{
+    btn.addEventListener('click', async function(){
+        const filter = btn.dataset.filter;
 
-    filterMode = btn.dataset.filter;
+        if(filter === 'COMPLETAS') filterState.completed = true;
+        else if(filter === 'INCOMPLETAS') filterState.completed = false;
+        else filterState.completed = null;
+        
+        filterState.page = 0;
 
-    document.querySelectorAll('[data-filter]')
-        .forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+        document.querySelectorAll('[data-filter]')
+            .forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-    tasks = await loadTasks();
+        await applyFilters();
+        renderTasks();
+        renderPagination();
+        renderActiveFilters();
+    })
+});
+
+let searchTimeout;
+document.querySelector('.titleSearch')?.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        filterState.search = this.value.trim();
+        filterState.page   = 0;
+        await applyFilters();
+        renderTasks();
+        renderPagination();
+        renderActiveFilters();
+    }, 300);
+});
+
+document.getElementById('priority-filter')?.addEventListener('change', async function() {
+    filterState.priority = this.value;
+    filterState.page     = 0;
+    await applyFilters();
     renderTasks();
+    renderPagination();
+    renderActiveFilters();
+});
+
+document.getElementById('category-filter')?.addEventListener('change', async function() {
+    filterState.categoryId = this.value;
+    filterState.page       = 0;
+    await applyFilters();
+    renderTasks();
+    renderPagination();
+    renderActiveFilters();
+});
+
+document.getElementById('due-before')?.addEventListener('change', async function() {
+    filterState.dueBefore = this.value;
+    filterState.page      = 0;
+    await applyFilters();
+    renderTasks();
+    renderPagination();
+    renderActiveFilters();
+});
+
+document.getElementById('due-after')?.addEventListener('change', async function() {
+    filterState.dueAfter = this.value;
+    filterState.page     = 0;
+    await applyFilters();
+    renderTasks();
+    renderPagination();
+    renderActiveFilters();
+});
+
+document.getElementById('overdue-filter')?.addEventListener('change', async function() {
+    filterState.overdue = this.checked;
+    filterState.page    = 0;
+    await applyFilters();
+    renderTasks();
+    renderPagination();
+    renderActiveFilters();
 });
 
 
@@ -231,5 +295,34 @@ sidebar.addEventListener('keydown', function(event) {
             event.preventDefault();
             first.focus();
         }
+    }
+});
+
+document.addEventListener('click', async function(event) {
+    const btn = event.target.closest('[data-admin-action]');
+    if (!btn) return;
+
+    const action = btn.dataset.adminAction;
+    const userId = btn.dataset.userId;
+
+    console.log('action:', action, 'userId:', userId, 'tipo:', typeof userId);
+
+    try {
+        if (action === 'toggle-enabled') {
+            await toggleUserEnabled(userId);
+        }
+        if (action === 'promote') {
+            if (!confirm('¿Promover este usuario a administrador?')) return;
+            await promote(userId);
+        }
+        if (action === 'demote') {
+            if (!confirm('¿Quitar el rol de administrador a este usuario?')) return;
+            await demote(userId);
+        }
+
+        await renderAdminPanel();
+
+    } catch (error) {
+        alert('Error: ' + error.message);
     }
 });

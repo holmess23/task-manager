@@ -5,12 +5,123 @@
 
 const API_URL = '/api/tasks';
 const CAT_URL = '/api/categories';
+const ADMIN_URL = '/api/admin';
 
-let filterMode = 'TODAS';
-let searchText = '';
+const filterState = {
+    completed: null,
+    search: '',
+    priority: '',
+    categoryId: '',
+    dueBefore: '',
+    dueAfter: '',
+    overdue: false,
+    page: 0,
+    size: 10,
+    sortBy: 'date',
+    sortDir: 'asc'
+};
+
 let tasks = [];           
 let taskCount = 0;
 let categories = [];
+
+let totalElements = 0;
+let totalPages = 0;
+
+function resetFilters(){
+    Object.assign(filterState, {
+    completed: null,
+    search: '',
+    priority: '',
+    categoryId: '',
+    dueBefore: '',
+    dueAfter: '',
+    overdue: false,
+    page: 0,
+    size: 10,
+    sortBy: 'date',
+    sortDir: 'asc'
+});
+}
+
+async function applyFilters() {
+    const params = new URLSearchParams();
+
+    if(filterState.completed !== null){
+        params.append('completed', filterState.completed);
+    }
+
+    if (filterState.search) params.append('search', filterState.search);
+    if (filterState.priority) params.append('priority', filterState.priority);
+    if (filterState.categoryId) params.append('categoryId', filterState.categoryId);
+    if (filterState.dueBefore) params.append('dueBefore', filterState.dueBefore);
+    if (filterState.dueAfter) params.append('dueAfter', filterState.dueAfter);
+    if (filterState.overdue) params.append('overdue', true);
+
+    params.append('page', filterState.page);
+    params.append('size', filterState.size);
+    params.append('sortBy', filterState.sortBy);
+    params.append('sortDir', filterState.sortDir);
+
+    const url = `${API_URL}?${params.toString()}`;
+
+    const response = await fetchWithAuth(url);
+    if (!response || !response.ok) return [];
+
+    const pageResponse = await response.json();
+    tasks = pageResponse.content;
+    totalPages = pageResponse.totalPages;
+    totalElements = pageResponse.totalElements;
+    taskCount = tasks.length;
+
+    return tasks;
+    
+}
+
+
+async function loadAllUsers(){
+    try {
+        const response = await fetchWithAuth(`${ADMIN_URL}/users`);
+        if (!response || !response.ok) {
+            return [];
+        }
+        return await response.json();
+    }catch (error) {
+        console.error('Error al cargar usuarios:', error);
+        return [];
+    }
+}
+
+async function toggleUserEnabled(id) {
+    const response = await fetchWithAuth(`${ADMIN_URL}/users/${id}/toggle-enabled`, {
+        method: 'PUT'
+    });
+    if (!response || !response.ok) {
+        throw new Error('Error al cambiar estado del usuario');
+    }
+    return await response.json();
+    
+}
+
+async function promote(id) {
+    const response = await fetchWithAuth(`${ADMIN_URL}/users/${id}/promote`, {
+        method: 'PUT'
+    });
+    if (!response || !response.ok) {
+        throw new Error('Error al promover al usuario');
+    }
+    return await response.json();
+}
+
+async function demote(id) {
+    const response = await fetchWithAuth(`${ADMIN_URL}/users/${id}/demote`, {
+        method: 'PUT'
+    });
+    if (!response || !response.ok) {
+        throw new Error('Error al degradar al usuario');
+    }   
+    return await response.json();
+}
 
 async function loadCategories(){
     try {
@@ -61,35 +172,31 @@ async function createCategory(name, color){
     }
 }
 
-async function loadTasks() {
-    try {
-        const params = new URLSearchParams();
+function goToPage(page) {
+    if (page < 0 || page >= totalPages) return;
+    filterState.page = page;
+    applyFilters().then(() => {
+        renderTasks();
+        renderPagination();
+    });
+}
 
-        if (filterMode === 'COMPLETAS') params.append('completed', 'true');
-        if (filterMode === 'INCOMPLETAS') params.append('completed', 'false');
-        if (searchText && searchText.trim() !== '') {
-            params.append('search', searchText.trim());
-        }
+function nextPage() {
+    goToPage(filterState.page + 1);
+}
 
-        const queryString = params.toString();
-        const url = queryString ? `${API_URL}?${queryString}` : API_URL;
-        console.log('Loading tasks with URL:', url);
-        const response = await fetchWithAuth(url);
+function prevPage() {
+    goToPage(filterState.page - 1);
+}
 
-        if (!response) {
-            return [];
-        }
-
-        if (!response.ok) throw new Error('Error al cargar tareas');
-
-        tasks = await response.json();
-        taskCount = tasks.length;
-        return tasks;
-
-    } catch (error) {
-        console.error('loadTasks:', error);
-        return [];
-    }
+function setSorting(sortBy, sortDir) {
+    currentSortBy = sortBy;
+    currentSortDir = sortDir;
+    filterState.page = 0; 
+    applyFilters().then(() => {
+        renderTasks();
+        renderPagination();
+    });
 }
 
 async function addTask(task) {
