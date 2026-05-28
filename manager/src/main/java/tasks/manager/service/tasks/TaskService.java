@@ -1,7 +1,5 @@
 package tasks.manager.service.tasks;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import tasks.manager.dto.PageResponseDTO;

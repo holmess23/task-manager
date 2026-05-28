@@ -1,11 +1,8 @@
 package tasks.manager.service.tasks;
 
-import java.util.List;
-import java.util.Set;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
